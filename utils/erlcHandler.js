@@ -1,3 +1,4 @@
+require('@dotenvx/dotenvx').config()
 const axios = require('axios');
 
 class ERLCHandler {
