@@ -1,0 +1,21 @@
+{
+  "name": "nycrp-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "JMU Solutions LLC",
+  "license": "ISC",
+  "description": "The official Discord bot for the New York City Roleplay community.",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.48.4",
+    "axios": "^1.11.0",
+    "better-sqlite3": "^12.2.0",
+    "discord.js": "^14.21.0",
+    "quick.db": "^9.1.7"
+  }
+}
