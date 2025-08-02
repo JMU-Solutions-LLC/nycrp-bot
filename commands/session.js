@@ -28,10 +28,7 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
 
         if (!interaction.member.roles.cache.has(process.env.SSU_PERMS_ROLE)) {
-            return interaction.reply({
-                content: '⚠️ You do not have permission to use this command.',
-                ephemeral: true,
-            });
+            return interaction.reply({ content: `⚠️ You need the <@&${process.env.SSU_PERMS_ROLE}> role to use this command.`, ephemeral: true });
         }
 
         const sessionChannel = interaction.client.channels.cache.get(process.env.SESSION_CHANNEL);
