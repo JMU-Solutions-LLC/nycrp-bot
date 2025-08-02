@@ -27,5 +27,7 @@ module.exports = {
         require('../tasks/infractions.js')(client);
         require('../tasks/serverStatus.js')(client);
         require('../tasks/playerCount.js')(client);
+        require('../tasks/tempSuspend.js')(client);
+        require('../tasks/ticketSystem.js')(client);
     }
 };
