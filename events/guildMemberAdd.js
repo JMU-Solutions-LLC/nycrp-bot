@@ -3,7 +3,7 @@ const { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discor
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
-        const channel = member.guild.channels.cache.get(process.env.WELCOME_CHANNEL);
+        const channel = member.guild.channels.fetch(process.env.WELCOME_CHANNEL);
         if (!channel) return console.warn('⚠️ WELCOME_CHANNEL not found or invalid.');
 
         const memberCount = member.guild.memberCount;
