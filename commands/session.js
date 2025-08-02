@@ -55,7 +55,16 @@ module.exports = {
             await db.delete('session.voteMessageId');
 
             const startMsg = startEmbed(interaction, votes.length);
-            await sessionChannel.send({ content: pingContent, embeds: [startMsg] });
+            await sessionChannel.send({ 
+                content: pingContent,
+                embeds: [startMsg],
+                components: [
+                    new ButtonBuilder()
+                        .setLabel('Join')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL('https://policeroleplay.community/join/NYCND')
+                ]
+            });
 
             await db.set('status.boostReady', false);
 

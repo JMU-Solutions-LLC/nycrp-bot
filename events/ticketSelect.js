@@ -1,4 +1,4 @@
-const { PermissionsBitField, ChannelType } = require('discord.js');
+const { PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const ticketEmbed = require('../embeds/ticket.js');
 const db = require('../utils/db.js');
 
@@ -65,7 +65,23 @@ module.exports = {
             category: choice 
         });
 
-        await ticketChannel.send({ content: `<@${user.id}> @here`, embeds: ticketEmbed() });
+        await ticketChannel.send({ 
+            content: `<@${user.id}> @here`, 
+            embeds: ticketEmbed(),
+            components: [
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('close-ticket')
+                        .setLabel('Close')
+                        .setStyle(ButtonStyle.Danger),
+                    new ButtonBuilder()
+                        .setCustomId('claim-ticket')
+                        .setLabel('Claim')
+                        .setStyle(ButtonStyle.Success)
+                )
+            ]
+        });
+        
         await interaction.reply({ content: `✅ Ticket created in **${selectedCategory.name}**: ${ticketChannel}`, ephemeral: true });
     }
 };
