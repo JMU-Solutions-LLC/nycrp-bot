@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { exec } = require("child_process");
 const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,7 +13,7 @@ module.exports = {
     const message = await interaction.fetchReply();
 
     fs.writeFileSync(
-      "../data/bot_restart.json",
+      path.join(__dirname, "../data/bot_restart.json"),
       JSON.stringify({
         channelId: interaction.channelId,
         messageId: message.id,
