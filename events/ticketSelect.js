@@ -65,7 +65,7 @@ module.exports = {
             category: choice 
         });
 
-        await ticketChannel.send(ticketEmbed(user.toString()));
+        await ticketChannel.send({ content: `<@${user.id}> @here`, embeds: [ticketEmbed()] });
         await interaction.reply({ content: `✅ Ticket created in **${selectedCategory.name}**: ${ticketChannel}`, ephemeral: true });
     }
 };

@@ -41,7 +41,7 @@ class ERLCHandler {
                         'server-key': this.serverKey,
                         'Accept': '*/*',
                     },
-                    data,
+                    data
                 });
 
                 this.updateRateLimit(endpoint, response.headers);
