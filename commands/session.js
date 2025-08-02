@@ -141,6 +141,17 @@ module.exports = {
             await db.set(`session.votes.${sentMsg.id}`, []);
             await db.set(`session.threshold.${sentMsg.id}`, customThreshold);
             await db.set('session.voteMessageId', sentMsg.id);
+        } else if (subcommand === 'boost') {
+            await sessionChannel.send({
+                content: messageContent || null,
+                embeds: [embedToSend],
+                components: [
+                    new ButtonBuilder()
+                        .setLabel('Join')
+                        .setStyle(ButtonStyle.Link)
+                        .setURL('https://policeroleplay.community/join/NYCND')
+                ]
+            });
         } else {
             await sessionChannel.send({ content: messageContent || null, embeds: [embedToSend] });
         }
