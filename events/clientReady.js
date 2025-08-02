@@ -1,4 +1,5 @@
 const { Events, ActivityType } = require('discord.js');
+const fs = require('node:fs');
 
 module.exports = {
     name: Events.ClientReady,
