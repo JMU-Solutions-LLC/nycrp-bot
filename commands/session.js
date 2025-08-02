@@ -27,8 +27,16 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
 
-        if (!interaction.member.roles.cache.has(process.env.SSU_PERMS_ROLE)) {
-            return interaction.reply({ content: `⚠️ You need the <@&${process.env.SSU_PERMS_ROLE}> role to use this command.`, ephemeral: true });
+        const requiredRole = interaction.guild.roles.cache.get(process.env.SESSION_ROLE);
+        if (!requiredRole) {
+            return interaction.editReply({ content: '⚠️ The required session role is not configured.' });
+        }
+
+        const invokerMember = await interaction.guild.members.fetch(interaction.user.id);
+        const hasRoleOrHigher = invokerMember.roles.cache.some(role => role.position >= requiredRole.position);
+
+        if (!hasRoleOrHigher) {
+            return interaction.reply({ content: `⚠️ You need the <@&${requiredRole.id}> role or higher to use this command.`, ephemeral: true });
         }
 
         const sessionChannel = interaction.client.channels.cache.get(process.env.SESSION_CHANNEL);

@@ -20,12 +20,14 @@ module.exports = {
         ),
     
     async execute(interaction) {
-        const { guild, member, channel } = interaction;
+        const { guild, channel } = interaction;
 
         const baseRole = guild.roles.cache.get(process.env.IA_BASE);
         if (!baseRole) return interaction.reply({ content: '❌ IA_BASE role not found in server.', ephemeral: true });
 
-        const hasPermission = member.roles.cache.some(role => role.position >= baseRole.position);
+        const invokerMember = await interaction.guild.members.fetch(interaction.user.id);
+        const hasPermission = invokerMember.roles.cache.some(role => role.position >= requiredRole.position);
+
         if (!hasPermission) {
             return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
         }

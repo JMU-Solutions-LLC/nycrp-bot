@@ -22,7 +22,8 @@ module.exports = {
             return false;
         }
 
-        const hasRoleOrHigher = member.roles.cache.some(role => role.position >= requiredRole.position);
+        const invokerMember = await interaction.guild.members.fetch(interaction.user.id);
+        const hasRoleOrHigher = invokerMember.roles.cache.some(role => role.position >= requiredRole.position);
 
         if (!hasRoleOrHigher) {
             await interaction.editReply({
