@@ -11,7 +11,7 @@ module.exports = (client) => {
 
             const { CurrentPlayers, MaxPlayers } = await erlc.request('/v1/server');
 
-            await vcChannel.setName(`Players: ${CurrentPlayers}/${MaxPlayers}`);
+            await vcChannel.setName(`👤・Players: ${CurrentPlayers}/${MaxPlayers}`);
 
         } catch (error) {
             console.error('❌ Failed to fetch player count:', error.message);
