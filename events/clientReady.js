@@ -1,5 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
 const fs = require('node:fs');
+const path = require('node:path');
 
 module.exports = {
     name: Events.ClientReady,
@@ -8,8 +9,8 @@ module.exports = {
         console.log(`✅ Ready! Logged in as ${client.user.tag}.`);
         client.user.setActivity('NYCRP members!', { type: ActivityType.Watching });
 
-        if (fs.existsSync('../data/bot_restart.json')) {
-            const { channelId, messageId } = JSON.parse(fs.readFileSync("../data/bot_restart.json", 'utf8'));
+        if (fs.existsSync(path.join(__dirname, "../data/bot_restart.json"))) {
+            const { channelId, messageId } = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/bot_restart.json"), 'utf8'));
 
             try {
                 const channel = await client.channels.fetch(channelId);
@@ -21,7 +22,7 @@ module.exports = {
                 console.error('Failed to update restart message:', error);
             }
 
-            fs.unlinkSync("../data/bot_restart.json");
+            fs.unlinkSync(path.join(__dirname, "../data/bot_restart.json"));
         }
 
         require('../tasks/infractions.js')(client);
