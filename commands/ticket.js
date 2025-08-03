@@ -26,7 +26,7 @@ module.exports = {
         if (!baseRole) return interaction.reply({ content: '❌ IA_BASE role not found in server.', ephemeral: true });
 
         const invokerMember = await interaction.guild.members.fetch(interaction.user.id);
-        const hasPermission = invokerMember.roles.cache.some(role => role.position >= requiredRole.position);
+        const hasPermission = invokerMember.roles.cache.some(role => role.position >= baseRole.position);
 
         if (!hasPermission) {
             return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
