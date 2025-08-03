@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const voteEmbed = require('../embeds/vote.js');
 const startEmbed = require('../embeds/start.js');
 const fullEmbed = require('../embeds/full.js');
@@ -132,7 +132,9 @@ module.exports = {
             return interaction.editReply({ content: `⚠️ The ${subcommand} embed is not implemented yet.` });
         }
 
-        let messageContent = subcommand === 'vote' ? `@here <@&${process.env.SESSION_ROLE}>` : '';
+        let messageContent = (subcommand === 'vote' || subcommand === 'boost') 
+            ? `@here <@&${process.env.SESSION_ROLE}>` 
+            : '';
 
         if (subcommand === 'vote') {
             const customThreshold = interaction.options.getInteger('votes') || parseInt(process.env.VOTE_THRESHOLD, 10);
@@ -158,15 +160,17 @@ module.exports = {
             await db.set(`session.threshold.${sentMsg.id}`, customThreshold);
             await db.set('session.voteMessageId', sentMsg.id);
         } else if (subcommand === 'boost') {
+            const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setLabel('Join')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(`https://policeroleplay.community/join/${JoinKey}`)
+            );
+
             await sessionChannel.send({
                 content: messageContent || null,
                 embeds: [embedToSend],
-                components: [
-                    new ButtonBuilder()
-                        .setLabel('Join')
-                        .setStyle(ButtonStyle.Link)
-                        .setURL(`https://policeroleplay.community/join/${JoinKey}`)
-                ]
+                components: [row]
             });
         } else {
             await sessionChannel.send({ content: messageContent || null, embeds: [embedToSend] });
