@@ -1,6 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const db = require('../utils/db.js');
 const startEmbed = require('../embeds/start.js');
+const erlc = require('../utils/erlc.js');
 
 module.exports = {
     customId: 'session_vote',
@@ -33,7 +34,6 @@ module.exports = {
                         .setCustomId(button.customId)
                         .setLabel(`Votes: ${votes.length}/${threshold}`)
                         .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true)
                 );
             } else {
                 updatedRow.addComponents(
@@ -56,11 +56,20 @@ module.exports = {
 
         if (votes.length >= threshold) {
             const sessionChannel = interaction.channel;
-
             await interaction.message.delete().catch(() => null);
 
+            const { Name, OwnerId, JoinKey } = await erlc.request('/v1/server');
+            let OwnerUsername;
+
+            try {
+                const response = await axios.get(`https://users.roblox.com/v1/users/${OwnerId}`);
+                OwnerUsername = response.data.name;
+            } catch (err) {
+                console.warn(`⚠️ Failed to fetch Roblox username for ID ${OwnerId}:`, err.message);
+            }
+
             const pingContent = `@here <@&${process.env.SESSION_ROLE}> | ${votes.map(id => `<@${id}>`).join(', ')}`;
-            const embedToSend = startEmbed(interaction);
+            const embedToSend = startEmbed(interaction, Name, OwnerUsername, JoinKey);
             await sessionChannel.send({ content: pingContent, embeds: [embedToSend] });
 
             await db.delete(`session.votes.${voteMessageId}`);

@@ -48,8 +48,14 @@ module.exports = {
 
         const { Name, OwnerId, JoinKey } = await erlc.request('/v1/server');
 
-        const response = await axios.get(`https://users.roblox.com/v1/users/${OwnerId}`);
-        const OwnerUsername = response.data.name;
+        let OwnerUsername;
+
+        try {
+            const response = await axios.get(`https://users.roblox.com/v1/users/${OwnerId}`);
+            OwnerUsername = response.data.name;
+        } catch (err) {
+            console.warn(`⚠️ Failed to fetch Roblox username for ID ${OwnerId}:`, err.message);
+        }
 
         const subcommand = interaction.options.getSubcommand();
 
@@ -140,7 +146,6 @@ module.exports = {
                     .setCustomId('session_vote_count')
                     .setLabel(`Votes: 0/${customThreshold}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(true)
             );
 
             const sentMsg = await sessionChannel.send({
