@@ -61,6 +61,7 @@ module.exports = async (client) => {
 
         if (isStaff) {
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, true);
+          noblox.setRank(process.env.ROBLOX_GROUP_ID, robloxId, "Staff Team")
         } else {
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
         }
