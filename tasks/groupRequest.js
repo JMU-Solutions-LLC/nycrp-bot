@@ -25,8 +25,6 @@ module.exports = async (client) => {
 
         if (processedRequests.has(robloxId)) continue;
 
-        console.log(`📥 New join request detected: ${username} (${robloxId})`);
-
         let bloxlinkData;
         try {
           const res = await axios.get(
