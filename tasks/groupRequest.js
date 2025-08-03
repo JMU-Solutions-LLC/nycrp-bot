@@ -8,7 +8,6 @@ module.exports = async (client) => {
 
   const guild = client.guilds.cache.get(process.env.GUILD_ID);
   if (!guild) throw new Error("❌ Discord guild not found.");
-  await guild.members.fetch();
 
   const storedRequests = db.get("processedRequests");
   let processedRequests = new Set(Array.isArray(storedRequests) ? storedRequests : []);
@@ -41,7 +40,6 @@ module.exports = async (client) => {
         }
 
         const discordIDs = bloxlinkData.discordIDs || [];
-        console.log(discordIDs);
         if (!discordIDs.length) {
           console.warn(`⚠️ No linked Discord account for ${username}.`);
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
@@ -50,12 +48,18 @@ module.exports = async (client) => {
           continue;
         }
 
-        const isStaff = discordIDs.some(discordId => {
-          const member = guild.members.cache.get(discordId);
-          return member?.roles.cache.has(process.env.STAFF_ROLE);
-        });
-
-        console.log(isStaff);
+        let isStaff = false;
+        for (const discordId of discordIDs) {
+          try {
+            const member = await guild.members.fetch(discordId);
+            if (member.roles.cache.has(process.env.STAFF_ROLE)) {
+              isStaff = true;
+              break;
+            }
+          } catch (err) {
+            console.warn(`⚠️ Could not fetch member ${discordId}:`, err.message);
+          }
+        }
 
         if (isStaff) {
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, true);
