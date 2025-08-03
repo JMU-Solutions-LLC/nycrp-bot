@@ -3,6 +3,7 @@ const axios = require("axios");
 
 module.exports = async (client) => {
   const currentUser = await noblox.setCookie(process.env.ROBLOX_COOKIE);
+  console.log(currentUser)
   console.log(`Logged in as ${currentUser.UserName} [${currentUser.UserID}]`);
 
   const event = noblox.onJoinRequest(process.env.ROBLOX_GROUP_ID);
