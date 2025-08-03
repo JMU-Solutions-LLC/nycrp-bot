@@ -76,15 +76,18 @@ module.exports = {
             await db.delete('session.voteMessageId');
 
             const startMsg = startEmbed(interaction, Name, OwnerUsername, JoinKey);
+
+            const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setLabel('Join')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(`https://policeroleplay.community/join/${JoinKey}`)
+            );
+
             await sessionChannel.send({ 
                 content: pingContent,
                 embeds: [startMsg],
-                components: [
-                    new ButtonBuilder()
-                        .setLabel('Join')
-                        .setStyle(ButtonStyle.Link)
-                        .setURL(`https://policeroleplay.community/join/${JoinKey}`)
-                ]
+                components: [row]
             });
 
             await db.set('status.boostReady', false);
