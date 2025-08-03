@@ -10,7 +10,8 @@ module.exports = async (client) => {
   if (!guild) throw new Error("❌ Discord guild not found.");
   await guild.members.fetch();
 
-  let processedRequests = new Set(db.get("processedRequests") || []);
+  const storedRequests = db.get("processedRequests");
+  let processedRequests = new Set(Array.isArray(storedRequests) ? storedRequests : []);
 
   setInterval(async () => {
     try {
