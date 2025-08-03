@@ -1,25 +1,31 @@
 const noblox = require("noblox.js");
 const axios = require("axios");
+const db = require("../utils/db");
 
 module.exports = async (client) => {
   const currentUser = await noblox.setCookie(process.env.ROBLOX_COOKIE);
-  console.log(`✅ Logged in as ${currentUser.UserName} [${currentUser.UserID}]`);
+  console.log(`✅ Logged in as ${currentUser.name} [${currentUser.id}]`);
 
   const guild = client.guilds.cache.get(process.env.GUILD_ID);
-  if (!guild) console.error("❌ Discord guild not found.");
+  if (!guild) throw new Error("❌ Discord guild not found.");
   await guild.members.fetch();
 
-  let processedRequests = new Set();
+  let processedRequests = new Set(db.get("processedRequests") || []);
 
   setInterval(async () => {
     try {
-      const requests = await noblox.getJoinRequests(process.env.ROBLOX_GROUP_ID);
-      for (const request of requests) {
+      const requests = await noblox.getJoinRequests({
+        group: process.env.ROBLOX_GROUP_ID,
+        limit: 100
+      });
+
+      console.log(requests);
+
+      for (const request of requests.data) {
         const robloxId = request.requester.userId;
         const username = request.requester.username;
 
         if (processedRequests.has(robloxId)) continue;
-        processedRequests.add(robloxId);
 
         console.log(`📥 New join request detected: ${username} (${robloxId})`);
 
@@ -37,7 +43,10 @@ module.exports = async (client) => {
 
         const discordIDs = bloxlinkData.discordIDs || [];
         if (!discordIDs.length) {
+          console.warn(`⚠️ No linked Discord account for ${username}.`);
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
+          processedRequests.add(robloxId);
+          db.set("processedRequests", Array.from(processedRequests));
           continue;
         }
 
@@ -51,6 +60,9 @@ module.exports = async (client) => {
         } else {
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
         }
+
+        processedRequests.add(robloxId);
+        db.set("processedRequests", Array.from(processedRequests));
 
         await new Promise(r => setTimeout(r, 1000));
       }
