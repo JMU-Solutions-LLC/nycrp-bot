@@ -3,66 +3,59 @@ const axios = require("axios");
 
 module.exports = async (client) => {
   const currentUser = await noblox.setCookie(process.env.ROBLOX_COOKIE);
-  console.log(`✅ Logged in as ${currentUser.name} [${currentUser.id}].`);
+  console.log(`✅ Logged in as ${currentUser.UserName} [${currentUser.UserID}]`);
 
-  const event = noblox.onJoinRequest(process.env.ROBLOX_GROUP_ID);
+  const guild = client.guilds.cache.get(process.env.GUILD_ID);
+  if (!guild) console.error("❌ Discord guild not found.");
+  await guild.members.fetch();
 
-  event.on("data", async (data) => {
+  let processedRequests = new Set();
+
+  setInterval(async () => {
     try {
-      const robloxId = data.userId;
+      const requests = await noblox.getJoinRequests(process.env.ROBLOX_GROUP_ID);
+      for (const request of requests) {
+        const robloxId = request.requester.userId;
+        const username = request.requester.username;
 
-      let bloxlinkData;
-      try {
-        const res = await axios.get(
-          `https://api.blox.link/v4/public/guilds/${process.env.GUILD_ID}/roblox-to-discord/${robloxId}`,
-          {
-            headers: { Authorization: process.env.BLOXLINK_API_KEY },
-          }
-        );
-        bloxlinkData = res.data;
-        console.log(res.data);
-      } catch (err) {
-        console.error(`❌ Failed to fetch from Bloxlink: ${err.response?.status || err.message}`);
-        return;
-      }
+        if (processedRequests.has(robloxId)) continue;
+        processedRequests.add(robloxId);
 
-      const discordIDs = bloxlinkData.discordIDs || [];
-      console.log(discordIDS);
+        console.log(`📥 New join request detected: ${username} (${robloxId})`);
 
-      if (!discordIDs.length) {
-        console.warn(`⚠️ No linked Discord accounts found for Roblox ID ${robloxId}.`);
-        await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
-        return;
-      }
-
-      const guild = client.guilds.cache.get(process.env.GUILD_ID);
-      if (!guild) {
-        console.error("❌ Discord guild not found.");
-        return;
-      }
-
-      let isStaff = false;
-      for (const discordId of discordIDs) {
-        const member = await guild.members.fetch(discordId).catch(() => null);
-        if (member && member.roles.cache.has(process.env.STAFF_ROLE)) {
-          isStaff = true;
-          break;
+        let bloxlinkData;
+        try {
+          const res = await axios.get(
+            `https://api.blox.link/v4/public/guilds/${process.env.GUILD_ID}/roblox-to-discord/${robloxId}`,
+            { headers: { Authorization: process.env.BLOXLINK_API_KEY } }
+          );
+          bloxlinkData = res.data;
+        } catch (err) {
+          console.error(`❌ Bloxlink fetch failed: ${err.response?.status || err.message}`);
+          continue;
         }
-      }
 
-      console.log(isStaff);
+        const discordIDs = bloxlinkData.discordIDs || [];
+        if (!discordIDs.length) {
+          await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
+          continue;
+        }
 
-      if (isStaff) {
-        await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, true);
-      } else {
-        await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
+        const isStaff = discordIDs.some(discordId => {
+          const member = guild.members.cache.get(discordId);
+          return member?.roles.cache.has(process.env.STAFF_ROLE);
+        });
+
+        if (isStaff) {
+          await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, true);
+        } else {
+          await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
+        }
+
+        await new Promise(r => setTimeout(r, 1000));
       }
     } catch (err) {
-      console.error("❌ Error handling join request:", err);
+      console.error("❌ Error polling join requests:", err);
     }
-  });
-
-  event.on("error", (err) => {
-    console.error("❌ Join Request Event Error:", err);
-  });
+  }, 15000);
 };
