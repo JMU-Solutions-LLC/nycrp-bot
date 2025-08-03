@@ -5,6 +5,8 @@ const fullEmbed = require('../embeds/full.js');
 const shutdownEmbed = require('../embeds/shutdown.js');
 const boostEmbed = require('../embeds/boost.js');
 const db = require('../utils/db.js');
+const erlc = require('../utils/erlcHandler.js');
+const axios = require('axios');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -44,6 +46,11 @@ module.exports = {
             return interaction.editReply({ content: '⚠️ The session channel is not configured correctly.' });
         }
 
+        const { Name, OwnerId, JoinKey } = await erlc.request('/v1/server');
+
+        const response = await axios.get(`https://users.roblox.com/v1/users/${OwnerId}`);
+        const OwnerUsername = response.data.name;
+
         const subcommand = interaction.options.getSubcommand();
 
         if (subcommand === 'start') {
@@ -62,7 +69,7 @@ module.exports = {
             await db.delete(`session.votes.${voteMessageId}`);
             await db.delete('session.voteMessageId');
 
-            const startMsg = startEmbed(interaction, votes.length);
+            const startMsg = startEmbed(interaction, Name, OwnerUsername, JoinKey);
             await sessionChannel.send({ 
                 content: pingContent,
                 embeds: [startMsg],
@@ -70,7 +77,7 @@ module.exports = {
                     new ButtonBuilder()
                         .setLabel('Join')
                         .setStyle(ButtonStyle.Link)
-                        .setURL('https://policeroleplay.community/join/NYCND')
+                        .setURL(`https://policeroleplay.community/join/${JoinKey}`)
                 ]
             });
 
@@ -98,6 +105,10 @@ module.exports = {
 
             const shutdownMsg = shutdownEmbed(interaction);
             await sessionChannel.send({ embeds: [shutdownMsg] });
+
+            await erlc.request('/v1/server/command', 'POST', {
+                command: ':kick all'
+            });
 
             await db.set('status.boostReady', false);
 
@@ -149,7 +160,7 @@ module.exports = {
                     new ButtonBuilder()
                         .setLabel('Join')
                         .setStyle(ButtonStyle.Link)
-                        .setURL('https://policeroleplay.community/join/NYCND')
+                        .setURL(`https://policeroleplay.community/join/${JoinKey}`)
                 ]
             });
         } else {

@@ -18,7 +18,8 @@ module.exports = {
                     { name: 'Inactivity Notice', value: 'Inactivity' },
                     { name: 'Warning', value: 'Warning' },
                     { name: 'Strike', value: 'Strike' },
-                    { name: 'Suspension', value: 'Suspension' }
+                    { name: 'Suspension', value: 'Suspension' },
+                    { name: 'Under Investigation', value: 'Under Investigation' }
                 ))
         .addStringOption(option =>
             option.setName('reason')
@@ -65,11 +66,13 @@ module.exports = {
 
         let roleId = null;
         let expiresAt = null;
+        let escalationNotice = null;
 
         if (punishment === 'Warning') {
             const warnings = activeInfractions.filter(i => i.punishment === 'Warning').length;
             if (warnings >= 2) {
                 punishment = 'Strike';
+                escalationNotice = `⚠️ User already has ${warnings} warnings. Escalating to Strike.`;
             }
         }
 
@@ -77,6 +80,7 @@ module.exports = {
             const strikes = activeInfractions.filter(i => i.punishment === 'Strike').length;
             if (strikes >= 2) {
                 punishment = 'Suspension';
+                escalationNotice = `⚠️ User already has ${strikes} strikes. Escalating to Suspension.`;
             }
         }
 
@@ -93,6 +97,10 @@ module.exports = {
             const strikes = activeInfractions.filter(i => i.punishment === 'Strike').length;
             roleId = strikes === 0 ? process.env.STRIKE_1_ROLE : process.env.STRIKE_2_ROLE;
             expiresAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+        }
+        else if (punishment === 'Under Investigation') {
+            roleId = process.env.UNDER_INVESTIGATION_ROLE;
+            expiresAt = null;
         }
         else if (punishment === 'Suspension') {
             roleId = process.env.SUSPENSION_ROLE;
@@ -124,6 +132,18 @@ module.exports = {
         const embedData = infractionEmbed(interaction, staffMember, punishment, reason);
         await channel.send(embedData);
 
-        await interaction.editReply({ content: `⚠️ ${punishment} issued to ${staffMember.tag}.`, ephemeral: true });
+        try {
+            await staffMember.send(embedData);
+        } catch (err) {
+            console.warn(`⚠️ Could not DM ${staffMember.tag}. They may have DMs disabled.`);
+        }
+
+        let replyMessage = `⚠️ ${punishment} issued to ${staffMember.tag}.`;
+
+        if (escalationNotice) {
+            replyMessage = `${escalationNotice}\n${replyMessage}`;
+        }
+
+        await interaction.editReply({ content: replyMessage, ephemeral: true });
     }
 };

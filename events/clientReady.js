@@ -30,5 +30,6 @@ module.exports = {
         require('../tasks/playerCount.js')(client);
         require('../tasks/tempSuspend.js')(client);
         require('../tasks/ticketSystem.js')(client);
+        require('../tasks/joinCode.js')(client);
     }
 };
