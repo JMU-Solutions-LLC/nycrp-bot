@@ -3,8 +3,7 @@ const axios = require("axios");
 
 module.exports = async (client) => {
   const currentUser = await noblox.setCookie(process.env.ROBLOX_COOKIE);
-  console.log(currentUser)
-  console.log(`Logged in as ${currentUser.UserName} [${currentUser.UserID}]`);
+  console.log(`✅ Logged in as ${currentUser.name} [${currentUser.id}].`);
 
   const event = noblox.onJoinRequest(process.env.ROBLOX_GROUP_ID);
 
@@ -21,12 +20,14 @@ module.exports = async (client) => {
           }
         );
         bloxlinkData = res.data;
+        console.log(res.data);
       } catch (err) {
         console.error(`❌ Failed to fetch from Bloxlink: ${err.response?.status || err.message}`);
         return;
       }
 
       const discordIDs = bloxlinkData.discordIDs || [];
+      console.log(discordIDS);
 
       if (!discordIDs.length) {
         console.warn(`⚠️ No linked Discord accounts found for Roblox ID ${robloxId}.`);
@@ -48,6 +49,8 @@ module.exports = async (client) => {
           break;
         }
       }
+
+      console.log(isStaff);
 
       if (isStaff) {
         await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, true);
