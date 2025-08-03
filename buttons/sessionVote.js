@@ -2,6 +2,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const db = require('../utils/db.js');
 const startEmbed = require('../embeds/start.js');
 const erlc = require('../utils/erlcHandler.js');
+const axios = require('axios');
 
 module.exports = {
     customId: 'session_vote',
