@@ -18,7 +18,7 @@ module.exports = (client) => {
             if (!member) continue;
 
             const infractions = await db.get(`infractions.${userId}`) || [];
-            const isPermanentlySuspended = infractions.some(i => i.punishment === 'Suspension');
+            const isPermanentlySuspended = infractions.some(i => i.punishment === 'Termination');
             if (isPermanentlySuspended) {
                 await db.delete(`tempsuspensions.${userId}`);
                 continue;

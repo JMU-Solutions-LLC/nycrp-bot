@@ -18,7 +18,7 @@ module.exports = {
                     { name: 'Inactivity Notice', value: 'Inactivity' },
                     { name: 'Warning', value: 'Warning' },
                     { name: 'Strike', value: 'Strike' },
-                    { name: 'Suspension', value: 'Suspension' },
+                    { name: 'Termination', value: 'Termination' },
                     { name: 'Under Investigation', value: 'Under Investigation' }
                 ))
         .addStringOption(option =>
@@ -72,15 +72,15 @@ module.exports = {
             const warnings = activeInfractions.filter(i => i.punishment === 'Warning').length;
             if (warnings >= 2) {
                 punishment = 'Strike';
-                escalationNotice = `⚠️ User already has ${warnings} warnings. Escalating to Strike.`;
+                escalationNotice = `⚠️ User already has ${warnings} warnings. Escalating to ${punishment}.`;
             }
         }
 
         if (punishment === 'Strike') {
             const strikes = activeInfractions.filter(i => i.punishment === 'Strike').length;
             if (strikes >= 2) {
-                punishment = 'Suspension';
-                escalationNotice = `⚠️ User already has ${strikes} strikes. Escalating to Suspension.`;
+                punishment = 'Termination';
+                escalationNotice = `⚠️ User already has ${strikes} strikes. Escalating to ${punishment}.`;
             }
         }
 
@@ -108,7 +108,7 @@ module.exports = {
                 await member.roles.remove(id).catch(() => null);
             }
         }
-        else if (punishment === 'Suspension') {
+        else if (punishment === 'Termination') {
             roleId = process.env.SUSPENSION_ROLE;
             expiresAt = null;
 
