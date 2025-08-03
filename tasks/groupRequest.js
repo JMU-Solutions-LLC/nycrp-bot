@@ -20,8 +20,6 @@ module.exports = async (client) => {
         limit: 100
       });
 
-      console.log(requests);
-
       for (const request of requests.data) {
         const robloxId = request.requester.userId;
         const username = request.requester.username;
@@ -43,6 +41,7 @@ module.exports = async (client) => {
         }
 
         const discordIDs = bloxlinkData.discordIDs || [];
+        console.log(discordIDs);
         if (!discordIDs.length) {
           console.warn(`⚠️ No linked Discord account for ${username}.`);
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, false);
@@ -55,6 +54,8 @@ module.exports = async (client) => {
           const member = guild.members.cache.get(discordId);
           return member?.roles.cache.has(process.env.STAFF_ROLE);
         });
+
+        console.log(isStaff);
 
         if (isStaff) {
           await noblox.handleJoinRequest(process.env.ROBLOX_GROUP_ID, robloxId, true);
