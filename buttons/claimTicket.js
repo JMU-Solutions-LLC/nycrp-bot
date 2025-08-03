@@ -52,7 +52,7 @@ module.exports = {
         await channel.permissionOverwrites.set(permissions);
 
         await interaction.reply({
-            content: `✅ Ticket claimed by <@${member.id}>.\n- Opener: <@${openerId}>\n- Staff: <@${member.id}>`,
+            content: `✅ Ticket claimed by <@${member.id}>.`,
         });
 
         await db.set(`ticket_channel_${channel.id}`, { ...ticketData, claimedBy: member.id });
