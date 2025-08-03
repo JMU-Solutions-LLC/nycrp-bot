@@ -101,6 +101,12 @@ module.exports = {
         else if (punishment === 'Under Investigation') {
             roleId = process.env.UNDER_INVESTIGATION_ROLE;
             expiresAt = null;
+
+            const baseRole = interaction.guild.roles.cache.get(process.env.SUSPENSION_BASE);
+            const rolesToRemove = member.roles.cache.filter(r => baseRole && r.position > baseRole.position);
+            for (const [id] of rolesToRemove) {
+                await member.roles.remove(id).catch(() => null);
+            }
         }
         else if (punishment === 'Suspension') {
             roleId = process.env.SUSPENSION_ROLE;
