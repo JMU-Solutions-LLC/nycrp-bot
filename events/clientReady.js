@@ -31,5 +31,6 @@ module.exports = {
         require('../tasks/tempSuspend.js')(client);
         require('../tasks/ticketSystem.js')(client);
         require('../tasks/joinCode.js')(client);
+        require('../tasks/groupRequest.js')(client);
     }
 };
