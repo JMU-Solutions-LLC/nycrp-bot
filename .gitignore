@@ -140,3 +140,4 @@ vite.config.ts.timestamp-*
 
 # Temporary files
 data/*
+transcripts/*
