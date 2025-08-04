@@ -3,6 +3,8 @@ require('@dotenvx/dotenvx').config()
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const express = require('express');
+const app = express();
 
 const client = new Client({
     intents: [
@@ -56,4 +58,10 @@ for (const file of eventFiles) {
     }
 }
 
+app.use('/', express.static(path.join(__dirname, 'transcripts')));
+
 client.login(process.env.TOKEN);
+
+app.listen(process.env.PORT, () => {
+  console.log(`✅ Transcript server listening on port ${process.env.PORT}.`);
+})

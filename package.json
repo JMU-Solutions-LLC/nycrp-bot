@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "deploy": "node deploy-commands.js",
+    "start": "npm i && node deploy-commands.js && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,7 +14,9 @@
     "@dotenvx/dotenvx": "^1.48.4",
     "axios": "^1.11.0",
     "better-sqlite3": "^12.2.0",
+    "discord-html-transcripts": "^3.2.0",
     "discord.js": "^14.21.0",
+    "express": "^5.1.0",
     "noblox.js": "^6.2.0",
     "quick.db": "^9.1.7"
   }
