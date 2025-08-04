@@ -1,5 +1,9 @@
-const { SlashCommandBuilder } = require('discord.js');
 const db = require('../utils/db.js');
+const discordTranscripts = require('discord-html-transcripts');
+const ticketClosedEmbed = require('../embeds/ticketClosed.js');
+const path = require('path');
+const fs = require('fs');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -40,12 +44,51 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
 
         if (subcommand === 'close') {
-            await interaction.reply({ content: '✅ This ticket will be closed in 5 seconds...', ephemeral: true });
+            await interaction.reply({
+                content: "✅ This ticket will be closed in 5 seconds...",
+            });
+
+            const transcriptHTML = await discordTranscripts.createTranscript(channel, {
+                saveImages: true,
+                returnType: 'string',
+                poweredBy: false
+            });
+
+            const transcriptsDir = path.join(__dirname, '../transcripts');
+            if (!fs.existsSync(transcriptsDir)) {
+                fs.mkdirSync(transcriptsDir, { recursive: true });
+            }
+
+            const fileName = `ticket-${ticketData.userId}-${Date.now()}.html`;
+            const filePath = path.join(transcriptsDir, fileName);
+            fs.writeFileSync(filePath, transcriptHTML, 'utf-8');
+
+            const transcriptURL = `${process.env.BASE_URL}/${fileName}`;
+            const embed = ticketClosedEmbed(interaction, ticketData);
+
+            const transcriptChannel = interaction.guild.channels.cache.get(process.env.TRANSCRIPT_CHANNEL);
+            if (!transcriptChannel) {
+                return interaction.followUp({ content: '⚠️ Transcript channel not found. Please check your configuration.', ephemeral: true });
+            }
+
+            const button = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setLabel('View Transcript')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(transcriptURL)
+            );
+
+            await transcriptChannel.send({
+                embeds: [embed],
+                components: [button],
+            });
 
             await db.delete(`ticket_channel_${channel.id}`);
             await db.delete(`ticket_${ticketData.userId}_${ticketData.category}`);
 
-            setTimeout(() => channel.delete().catch(() => {}), 5000);
+            setTimeout(() => {
+                channel.delete().catch(() => null);
+            }, 5000);
         }
 
         if (subcommand === 'rename') {
