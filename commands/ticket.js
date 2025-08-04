@@ -3,7 +3,7 @@ const discordTranscripts = require('discord-html-transcripts');
 const ticketClosedEmbed = require('../embeds/ticketClosed.js');
 const path = require('path');
 const fs = require('fs');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
