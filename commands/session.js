@@ -29,7 +29,7 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
 
-        const requiredRole = interaction.guild.roles.cache.get(process.env.SESSION_ROLE);
+        const requiredRole = interaction.guild.roles.cache.get(process.env.SSU_PERMS_ROLE);
         if (!requiredRole) {
             return interaction.editReply({ content: '⚠️ The required session role is not configured.' });
         }
