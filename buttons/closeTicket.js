@@ -32,7 +32,8 @@ module.exports = {
 
         const transcriptHTML = await discordTranscripts.createTranscript(channel, {
             saveImages: true,
-            returnType: 'string'
+            returnType: 'string',
+            poweredBy: false
         });
 
         const transcriptsDir = path.join(__dirname, '../transcripts');
