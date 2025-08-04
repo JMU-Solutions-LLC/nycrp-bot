@@ -1,6 +1,6 @@
 # NYCRP Discord Bot
 
-This is a Discord bot I developed for a friend who runs a private server in the Roblox game **[Emergency Response: Liberty County (ER:LC)](https://www.roblox.com/games/2534724415/Emergency-Response-Liberty-County)**.  
+This is a Discord bot our company developed for a client who runs a private server in the Roblox game **[Emergency Response: Liberty County (ER:LC)](https://www.roblox.com/games/2534724415/Emergency-Response-Liberty-County)**.  
 
 The bot integrates with ER:LC's API to provide server management tools for staff and a better experience for players.
 
@@ -38,4 +38,4 @@ Want to see the bot in action or join the NYCRP community?
 - More detailed ER:LC API integrations
 - Enhanced support features for staff and players
 ## 🤝 Credits
-Developed by **Jose Moran Urena** for New York City Roleplay, a private ER:LC server.
+Developed by [JMU Solutions LLC](https://jmusolutionsllc.com/) for New York City Roleplay, a private ER:LC server.
